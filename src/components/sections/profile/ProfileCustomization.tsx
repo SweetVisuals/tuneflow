@@ -37,10 +37,10 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
 
   const saveLayout = async () => {
     try {
-      // Prepare sections data by ensuring content is serializable
-      const sanitizedItems = items.map(item => ({
-        ...item,
-        content: typeof item.content === 'string' ? item.content : ''
+      // Prepare sections data by omitting the icon property
+      const sanitizedItems = items.map(({ icon, ...rest }) => ({
+        ...rest,
+        content: typeof rest.content === 'string' ? rest.content : ''
       }));
 
       const { error } = await supabase
@@ -65,7 +65,7 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
         description: "Your changes have been saved",
       });
       
-      onSave(sanitizedItems);
+      onSave(items); // Pass the full items including icons for the UI
     } catch (error) {
       toast({
         title: "Error saving profile",

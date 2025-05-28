@@ -42,9 +42,8 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
           const mergedSections = defaultContentSections.map(defaultSection => {
             const savedSection = savedLayout.sections?.find((s: any) => s.id === defaultSection.id);
             return {
-              ...defaultSection,
-              ...savedSection,
-              // Ensure content is always a string or null
+              ...defaultSection, // Keep the default icon from defaultContentSections
+              name: savedSection?.name ?? defaultSection.name,
               content: savedSection?.content && typeof savedSection.content === 'string' 
                 ? savedSection.content 
                 : '',
@@ -117,7 +116,14 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
         .from('profiles')
         .update({
           layout: {
-            sections: updatedSections,
+            sections: updatedSections.map(section => ({
+              id: section.id,
+              name: section.name,
+              content: section.content,
+              visible: section.visible,
+              order: section.order
+              // Explicitly omit the icon property as it's a React component
+            })),
             preferences
           }
         })
