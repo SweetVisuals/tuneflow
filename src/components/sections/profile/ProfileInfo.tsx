@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
 import { Gem, Headphones, MapPin, MessageCircle, UsersRound, Pencil, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -15,15 +13,6 @@ interface ProfileInfoProps {
   onSave: (data: { bio: string; tag: string }) => void;
 }
 
-const TAG_OPTIONS = [
-  { value: 'none', label: 'None' },
-  { value: 'Vocalist', label: 'Vocalist' },
-  { value: 'Engineer', label: 'Engineer' },
-  { value: 'Producer', label: 'Producer' },
-  { value: 'Creative', label: 'Creative' },
-  { value: 'Technician', label: 'Technician' }
-];
-
 export function ProfileInfo({ 
   name, 
   bio, 
@@ -33,62 +22,30 @@ export function ProfileInfo({
 }: ProfileInfoProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editBio, setEditBio] = useState(bio);
-  const [editTag, setEditTag] = useState(tag);
-  const [editName, setEditName] = useState(name);
 
   const handleSave = () => {
-    onSave({ bio: editBio, tag: editTag });
+    onSave({ bio: editBio, tag });
     setIsEditing(false);
   };
 
   return (
     <div className="flex-1 space-y-6">
       <div className="space-y-4 w-full">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 flex-1">
-            {isEditing ? (
-              <Input
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                className="text-3xl font-bold bg-transparent border-none focus-visible:ring-0 px-0"
-              />
-            ) : (
-              <h1 className="text-3xl font-bold">{name}</h1>
-            )}
-            <div className="flex items-center gap-4">
-              {isEditing ? (
-                <Select 
-                  value={editTag || 'none'} 
-                  onValueChange={(value: string) => setEditTag(value === 'none' ? '' : value)}
-                >
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Select tag" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TAG_OPTIONS.map((option) => (
-                      <SelectItem 
-                        key={option.value} 
-                        value={option.value}
-                      >
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                tag && <Badge variant="outline" className="animate-in fade-in-50">{tag}</Badge>
-              )}
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span className="text-sm">New York, NY</span>
-              </div>
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold">{name}</h1>
+          <div className="flex items-center gap-4">
+            {tag && <Badge variant="outline" className="animate-in fade-in-50">{tag}</Badge>}
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <MapPin className="h-4 w-4" />
+              <span className="text-sm">New York, NY</span>
             </div>
           </div>
+          
           {isCurrentUser && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 ml-auto">
               {isEditing ? (
                 <>
-                  <Button variant="outline\" size="sm\" onClick={handleSave}>
+                  <Button variant="outline" size="sm" onClick={handleSave}>
                     <Check className="h-4 w-4 mr-2" />
                     Save
                   </Button>
@@ -100,12 +57,13 @@ export function ProfileInfo({
               ) : (
                 <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
                   <Pencil className="h-4 w-4 mr-2" />
-                  Edit Profile
+                  Edit Bio
                 </Button>
               )}
             </div>
           )}
         </div>
+
         <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <UsersRound className="h-4 w-4" />
