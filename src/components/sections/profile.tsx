@@ -44,7 +44,10 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
             return {
               ...defaultSection,
               ...savedSection,
-              content: '',
+              // Ensure content is always a string or null
+              content: savedSection?.content && typeof savedSection.content === 'string' 
+                ? savedSection.content 
+                : '',
               visible: savedSection?.visible ?? true,
               order: savedSection?.order ?? defaultSection.order
             };

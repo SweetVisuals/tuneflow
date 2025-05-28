@@ -37,12 +37,17 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
 
   const saveLayout = async () => {
     try {
+      // Prepare sections data by ensuring content is serializable
+      const sanitizedItems = items.map(item => ({
+        ...item,
+        content: typeof item.content === 'string' ? item.content : ''
+      }));
+
       const { error } = await supabase
-        .from('user_profiles')
-        .upsert({
-          user_id: userId,
+        .from('profiles')
+        .update({
           layout: {
-            sections: items,
+            sections: sanitizedItems,
             preferences: {
               layout,
               theme,
@@ -50,7 +55,8 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
             }
           },
           updated_at: new Date().toISOString()
-        });
+        })
+        .eq('id', userId);
 
       if (error) throw error;
 
@@ -59,7 +65,7 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
         description: "Your changes have been saved",
       });
       
-      onSave(items);
+      onSave(sanitizedItems);
     } catch (error) {
       toast({
         title: "Error saving profile",
