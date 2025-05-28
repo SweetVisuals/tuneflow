@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { supabase, supabaseAdmin } from "@/lib/supabase"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/use-toast"
 
 interface SignupFormProps extends React.ComponentProps<"div"> {
@@ -80,17 +80,24 @@ export function SignupForm({
       if (signUpError) throw signUpError;
       if (!user) throw new Error('User creation failed');
 
-      // Step 2: Create profile via MCP
-      const { error: profileError } = await supabase.rpc('create_profile', {
-        user_id: user.id,
-        username: name,
-        full_name: name,
-        user_email: user.email
+      // Step 2: Create profile via Edge Function
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-profile`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          username: name,
+          full_name: name,
+          user_email: user.email
+        })
       });
 
-      if (profileError) {
-        console.error('Profile creation error:', profileError);
-        throw profileError;
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Profile creation failed');
       }
 
       // Check if email confirmation is required

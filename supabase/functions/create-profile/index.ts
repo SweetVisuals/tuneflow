@@ -1,50 +1,60 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient } from 'npm:@supabase/supabase-js@2.39.3'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST'
+  'Access-Control-Allow-Methods': 'POST, OPTIONS'
 }
 
-serve(async (req) => {
-  // Handle CORS preflight
+Deno.serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, {
+      headers: corsHeaders
+    })
   }
+
   try {
+    const { user_id, username, full_name, user_email } = await req.json()
+
+    // Initialize Supabase client with service role key
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
     )
 
-    const { id, username, full_name, email } = await req.json()
-
-    const { data, error } = await supabaseAdmin
+    // Create profile
+    const { error: profileError } = await supabaseAdmin
       .from('profiles')
-      .upsert({
-        id,
+      .insert({
+        id: user_id,
         username,
         full_name,
-        email
+        email: user_email
       })
-      .select()
 
-    if (error) throw error
+    if (profileError) throw profileError
 
-    return new Response(JSON.stringify(data), {
-      headers: { 
-        'Content-Type': 'application/json',
-        ...corsHeaders
-      },
-    })
+    return new Response(
+      JSON.stringify({ message: 'Profile created successfully' }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
+      }
+    )
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 400,
-      headers: { 
-        'Content-Type': 'application/json',
-        ...corsHeaders
-      },
-    })
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400
+      }
+    )
   }
 })
