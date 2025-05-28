@@ -208,20 +208,18 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
             onSave={handleSaveLayout}
           />
         ) : (
-          <div className="w-full overflow-x-auto pb-6">
-            <div className="flex gap-6 min-w-max">
-              {profileSections
-                .filter(section => section.visible)
-                .sort((a, b) => (a.order || 0) - (b.order || 0))
-                .map((section) => (
-                  <div key={section.id} className="w-[400px]">
-                    <ProfileContentSection
-                      {...section}
-                      state={state}
-                    />
-                  </div>
-                ))}
-            </div>
+          <div className="space-y-6">
+            {profileSections
+              .filter(section => section.visible)
+              .sort((a, b) => (a.order || 0) - (b.order || 0))
+              .map((section) => (
+                <div key={section.id} className="w-full">
+                  <ProfileContentSection
+                    {...section}
+                    state={state}
+                  />
+                </div>
+              ))}
           </div>
         )}
       </div>
