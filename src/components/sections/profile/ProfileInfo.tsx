@@ -45,7 +45,7 @@ export function ProfileInfo({
             <div className="flex items-center gap-2 ml-auto">
               {isEditing ? (
                 <>
-                  <Button variant="outline\" size="sm\" onClick={handleSave}>
+                  <Button variant="outline" size="sm" onClick={handleSave}>
                     <Check className="h-4 w-4 mr-2" />
                     Save
                   </Button>
@@ -84,19 +84,28 @@ export function ProfileInfo({
       </div>
 
       {isEditing ? (
-        <Textarea
-          value={editBio}
-          onChange={(e) => setEditBio(e.target.value)}
-          className="min-h-[120px] resize-none text-sm bg-background/50 border border-input/50 focus-visible:ring-1 focus-visible:ring-ring/50 rounded-lg p-4"
-          placeholder="Tell your story and showcase your work..."
-        />
+        <div className="relative">
+          <Textarea
+            value={editBio}
+            onChange={(e) => setEditBio(e.target.value)}
+            className="min-h-[150px] w-full resize-none text-base leading-relaxed bg-background/50 backdrop-blur-sm border border-input/20 focus-visible:ring-1 focus-visible:ring-ring/30 rounded-xl p-6 transition-all duration-200 ease-in-out shadow-sm hover:border-input/30 focus-visible:border-input/40"
+            placeholder="Tell your story and showcase your work..."
+            style={{
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)'
+            }}
+          />
+          <div className="absolute bottom-4 right-4 text-xs text-muted-foreground/60">
+            {editBio.length}/500
+          </div>
+        </div>
       ) : (
-        <p className="text-sm text-muted-foreground max-w-2xl pr-20 ml-0.5">
+        <p className="text-base leading-relaxed text-muted-foreground max-w-3xl">
           {bio || (
             <span className="text-muted-foreground/60">
               This user hasn't added a bio yet. 
               <br />
-              <span className="text-xs">Tell your story and showcase your work to connect with others.</span>
+              <span className="text-sm">Tell your story and showcase your work to connect with others.</span>
             </span>
           )}
         </p>
