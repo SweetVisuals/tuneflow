@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -8,8 +11,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowUpDown, Settings2, Layout, Palette } from 'lucide-react';
+import { Settings2, Layout, Palette } from 'lucide-react';
 import { ProfileItem } from './types';
+import { SortableItem } from './SortableItem';
 
 interface ProfileCustomizationProps {
   sections: ProfileItem[];
@@ -24,13 +28,23 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
   const [showStats, setShowStats] = useState(true);
   const { toast } = useToast();
 
-  const moveItem = (index: number, direction: 'up' | 'down') => {
-    const newItems = [...items];
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: any) => {
+    const {active, over} = event;
     
-    if (newIndex >= 0 && newIndex < items.length) {
-      [newItems[index], newItems[newIndex]] = [newItems[newIndex], newItems[index]];
-      setItems(newItems);
+    if (active.id !== over.id) {
+      setItems((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        
+        return arrayMove(items, oldIndex, newIndex);
+      });
     }
   };
 
@@ -89,56 +103,36 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
         <TabsContent value="layout" className="space-y-4">
           <Card>
             <CardContent className="pt-6">
-              <div className="space-y-2">
-                {items.map((item, index) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center gap-4 p-4 bg-card rounded-lg border shadow-sm"
-                  >
-                    <div className="flex flex-col gap-1">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => moveItem(index, 'up')}
-                        disabled={index === 0}
-                        className="h-6 w-6"
-                      >
-                        <ArrowUpDown className="h-4 w-4 rotate-180" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => moveItem(index, 'down')}
-                        disabled={index === items.length - 1}
-                        className="h-6 w-6"
-                      >
-                        <ArrowUpDown className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="flex-1">
-                      <Input
-                        value={item.name}
-                        onChange={(e) => {
-                          const newItems = items.map((i) =>
-                            i.id === item.id ? { ...i, name: e.target.value } : i
-                          );
-                          setItems(newItems);
+              <DndContext 
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+                modifiers={[restrictToVerticalAxis]}
+              >
+                <SortableContext 
+                  items={items}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="space-y-2">
+                    {items.map((item) => (
+                      <SortableItem 
+                        key={item.id} 
+                        item={item}
+                        onNameChange={(name) => {
+                          setItems(items.map(i => 
+                            i.id === item.id ? { ...i, name } : i
+                          ));
                         }}
-                        className="border-none bg-transparent focus-visible:ring-0 px-0 text-lg font-medium"
+                        onVisibilityChange={(visible) => {
+                          setItems(items.map(i =>
+                            i.id === item.id ? { ...i, visible } : i
+                          ));
+                        }}
                       />
-                    </div>
-                    <Switch
-                      checked={item.visible}
-                      onCheckedChange={(checked) => {
-                        const newItems = items.map((i) =>
-                          i.id === item.id ? { ...i, visible: checked } : i
-                        );
-                        setItems(newItems);
-                      }}
-                    />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </SortableContext>
+              </DndContext>
             </CardContent>
           </Card>
         </TabsContent>

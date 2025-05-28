@@ -34,7 +34,7 @@ export function ProfileInfo({
         <div className="flex items-center gap-4">
           <h1 className="text-3xl font-bold">{name}</h1>
           <div className="flex items-center gap-4">
-            {tag && <Badge variant="outline\" className="animate-in fade-in-50">{tag}</Badge>}
+            {tag && <Badge variant="outline">{tag}</Badge>}
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <MapPin className="h-4 w-4" />
               <span className="text-sm">New York, NY</span>
@@ -45,11 +45,14 @@ export function ProfileInfo({
             <div className="flex items-center gap-2 ml-auto">
               {isEditing ? (
                 <>
-                  <Button variant="outline\" size="sm\" onClick={handleSave}>
+                  <Button variant="outline" size="sm" onClick={handleSave}>
                     <Check className="h-4 w-4 mr-2" />
                     Save
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    setEditBio(bio);
+                    setIsEditing(false);
+                  }}>
                     <X className="h-4 w-4 mr-2" />
                     Cancel
                   </Button>
@@ -84,7 +87,7 @@ export function ProfileInfo({
         <Textarea
           value={editBio}
           onChange={(e) => setEditBio(e.target.value)}
-          className="min-h-[100px] resize-none text-sm bg-transparent focus-visible:ring-1"
+          className="min-h-[120px] resize-none text-sm bg-background/50 border border-input/50 focus-visible:ring-1 focus-visible:ring-ring/50 rounded-lg p-4"
           placeholder="Tell your story and showcase your work..."
         />
       ) : (
