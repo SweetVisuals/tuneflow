@@ -39,7 +39,6 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
 
         if (!error && data?.layout) {
           const savedLayout = data.layout;
-          // Merge saved layout with default sections
           const mergedSections = defaultContentSections.map(defaultSection => {
             const savedSection = savedLayout.sections?.find((s: any) => s.id === defaultSection.id);
             return {
@@ -96,8 +95,6 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
         title: 'Upload successful',
         description: `Your ${type} has been updated`,
       });
-
-      console.log(`${type} URL:`, publicUrl);
       
     } catch (error) {
       toast({
@@ -145,10 +142,7 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
     <div className="transition-all duration-300">
       <div className={cn(
         "space-y-6 pb-6 w-full px-6 transition-all duration-300",
-        state === 'collapsed' ? 'pr-6 min-w-[calc(100vw-6rem)]' : 'pr-6 min-w-[calc(100vw-20rem)]',
-        preferences.theme === 'modern' ? 'bg-gradient-to-br from-background to-background/80' : '',
-        preferences.theme === 'minimal' ? 'bg-background' : '',
-        preferences.theme === 'classic' ? 'bg-muted/10' : ''
+        state === 'collapsed' ? 'pr-6 min-w-[calc(100vw-6rem)]' : 'pr-6 min-w-[calc(100vw-20rem)]'
       )}>
         <ProfileBanner
           isCurrentUser={!!currentUserId && user.id === currentUserId}
@@ -214,22 +208,20 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
             onSave={handleSaveLayout}
           />
         ) : (
-          <div className={cn(
-            "grid gap-6",
-            preferences.layout === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : '',
-            preferences.layout === 'list' ? 'grid-cols-1' : '',
-            preferences.layout === 'masonry' ? 'columns-1 md:columns-2 lg:columns-3' : ''
-          )}>
-            {profileSections
-              .filter(section => section.visible)
-              .sort((a, b) => (a.order || 0) - (b.order || 0))
-              .map((section) => (
-                <ProfileContentSection
-                  key={section.id}
-                  {...section}
-                  state={state}
-                />
-              ))}
+          <div className="w-full overflow-x-auto pb-6">
+            <div className="flex gap-6 min-w-max">
+              {profileSections
+                .filter(section => section.visible)
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .map((section) => (
+                  <div key={section.id} className="w-[400px]">
+                    <ProfileContentSection
+                      {...section}
+                      state={state}
+                    />
+                  </div>
+                ))}
+            </div>
           </div>
         )}
       </div>
