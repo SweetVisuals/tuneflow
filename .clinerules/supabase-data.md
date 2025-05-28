@@ -1,0 +1,22 @@
+postgresql://postgres:[YOUR-PASSWORD]@db.fbgncijhtbplnepysbld.supabase.co:5432/postgres 
+
+Password: Longlonglong1!
+
+
+REACT_APP_SUPABASE_URL=https://fbgncijhtbplnepysbld.supabase.co
+REACT_APP_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiZ25jaWpodGJwbG5lcHlzYmxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDczNzU0OTAsImV4cCI6MjA2Mjk1MTQ5MH0.Vfgl9ExKjODdOGsvEFDzyBbU_5L1Rm8sSdDhXGRzX70
+        
+Project Name: TuneFlow
+Project ID: fbgncijhtbplnepysbld
+
+JWT Secret: Yc2R5nNmTLQKgwP5/eY74So2SR+z8rJBFI3RH0olTZROG/htzBmwEr6XKKzcQzWMvYt3e3fIiLYWjNrnTEk8xg==
+
+ANON PUBLIC: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiZ25jaWpodGJwbG5lcHlzYmxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDczNzU0OTAsImV4cCI6MjA2Mjk1MTQ5MH0.Vfgl9ExKjODdOGsvEFDzyBbU_5L1Rm8sSdDhXGRzX70
+
+Service Role (secret): eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiZ25jaWpodGJwbG5lcHlzYmxkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NzM3NTQ5MCwiZXhwIjoyMDYyOTUxNDkwfQ.o46erUPw6uWTdU5XjHQXmp0HHLyubqWBbUzB-cFVyWE
+
+Project URL: https://fbgncijhtbplnepysbld.supabase.co
+
+Query.dev API: qry_v1_R4Rg6WhOH62K2XvpbgSAEF6LokcTU4mXKbZc-JaLHQM
+
+
