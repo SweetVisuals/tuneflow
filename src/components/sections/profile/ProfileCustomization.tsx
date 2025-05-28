@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -11,9 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Settings2, Layout, Palette } from 'lucide-react';
+import { Settings2, Layout, Palette, GripVertical } from 'lucide-react';
 import { ProfileItem } from './types';
-import { SortableItem } from './SortableItem';
 
 interface ProfileCustomizationProps {
   sections: ProfileItem[];
@@ -28,24 +25,14 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
   const [showStats, setShowStats] = useState(true);
   const { toast } = useToast();
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const onDragEnd = (result: any) => {
+    if (!result.destination) return;
 
-  const handleDragEnd = (event: any) => {
-    const {active, over} = event;
-    
-    if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
+    const newItems = Array.from(items);
+    const [reorderedItem] = newItems.splice(result.source.index, 1);
+    newItems.splice(result.destination.index, 0, reorderedItem);
+
+    setItems(newItems.map((item, index) => ({ ...item, order: index })));
   };
 
   const saveLayout = async () => {
@@ -55,7 +42,7 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
         .upsert({
           user_id: userId,
           layout: {
-            sections: items.map((item, index) => ({ ...item, order: index })),
+            sections: items,
             preferences: {
               layout,
               theme,
@@ -103,36 +90,57 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
         <TabsContent value="layout" className="space-y-4">
           <Card>
             <CardContent className="pt-6">
-              <DndContext 
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-                modifiers={[restrictToVerticalAxis]}
-              >
-                <SortableContext 
-                  items={items}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-2">
-                    {items.map((item) => (
-                      <SortableItem 
-                        key={item.id} 
-                        item={item}
-                        onNameChange={(name) => {
-                          setItems(items.map(i => 
-                            i.id === item.id ? { ...i, name } : i
-                          ));
-                        }}
-                        onVisibilityChange={(visible) => {
-                          setItems(items.map(i =>
-                            i.id === item.id ? { ...i, visible } : i
-                          ));
-                        }}
-                      />
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="sections">
+                  {(provided) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className="space-y-2"
+                    >
+                      {items.map((item, index) => (
+                        <Draggable key={item.id} draggableId={item.id} index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className={`relative flex items-center gap-4 p-4 bg-card rounded-lg border shadow-sm ${
+                                snapshot.isDragging ? 'opacity-50' : ''
+                              }`}
+                            >
+                              <div {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing">
+                                <GripVertical className="h-5 w-5 text-muted-foreground" />
+                              </div>
+                              
+                              <div className="flex-1">
+                                <Input
+                                  value={item.name}
+                                  onChange={(e) => {
+                                    const newItems = [...items];
+                                    newItems[index].name = e.target.value;
+                                    setItems(newItems);
+                                  }}
+                                  className="border-none bg-transparent focus-visible:ring-0 px-0 text-lg font-medium"
+                                />
+                              </div>
+                              
+                              <Switch
+                                checked={item.visible}
+                                onCheckedChange={(checked) => {
+                                  const newItems = [...items];
+                                  newItems[index].visible = checked;
+                                  setItems(newItems);
+                                }}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
             </CardContent>
           </Card>
         </TabsContent>
