@@ -25,22 +25,23 @@ export function SortableItem({ item, onNameChange, onVisibilityChange }: Sortabl
     transform: CSS.Transform.toString(transform),
     transition,
     zIndex: isDragging ? 2 : 1,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.5 : undefined,
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-4 p-4 bg-card rounded-lg border shadow-sm"
+      className="relative flex items-center gap-4 p-4 bg-card rounded-lg border shadow-sm touch-none"
     >
-      <div
+      <button
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing"
+        className="cursor-grab active:cursor-grabbing touch-none"
+        type="button"
       >
         <GripVertical className="h-5 w-5 text-muted-foreground" />
-      </div>
+      </button>
       
       <div className="flex-1">
         <Input
