@@ -1,8 +1,7 @@
-"use client"
-
 import * as React from "react"
 import { createClient } from "@supabase/supabase-js"
 import { supabase } from "@/lib/supabase"
+import { useNavigate } from "react-router-dom"
 
 const serviceRoleKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiZ25jaWpodGJwbG5lcHlzYmxkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NzM3NTQ5MCwiZXhwIjoyMDYyOTUxNDkwfQ.o46erUPw6uWTdU5XjHQXmp0HHLyubqWBbUzB-cFVyWE"
 const supabaseAdmin = createClient(
@@ -15,6 +14,7 @@ import {
   LayoutDashboard,
   LogOut,
   Sparkles,
+  Folder
 } from "lucide-react"
 
 import {
@@ -41,6 +41,7 @@ import { CaretSortIcon, ComponentPlaceholderIcon } from "@radix-ui/react-icons"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
+  const navigate = useNavigate()
   const [user, setUser] = React.useState<{
     name: string
     email: string
@@ -164,27 +165,31 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Sparkles />
+                <Sparkles className="mr-2 h-4 w-4" />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => window.location.href = '/dashboard'}>
-                <LayoutDashboard />
+              <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                <LayoutDashboard className="mr-2 h-4 w-4" />
                 Dashboard
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <BadgeCheck />
+                <BadgeCheck className="mr-2 h-4 w-4" />
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <ComponentPlaceholderIcon />
+                <ComponentPlaceholderIcon className="mr-2 h-4 w-4" />
                 Billing
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Bell />
+                <Bell className="mr-2 h-4 w-4" />
                 Notifications
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/?tab=files')}>
+                <Folder className="mr-2 h-4 w-4" />
+                My Files
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -193,8 +198,9 @@ export function NavUser() {
               if (error) {
                 console.error('Error logging out:', error.message)
               }
+              navigate('/login')
             }}>
-              <LogOut />
+              <LogOut className="mr-2 h-4 w-4" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
