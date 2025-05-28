@@ -1,8 +1,5 @@
-import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Gem, Headphones, MapPin, MessageCircle, UsersRound, Pencil, Check, X } from 'lucide-react';
+import { Gem, Headphones, MapPin, UsersRound } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ProfileInfoProps {
@@ -17,17 +14,8 @@ export function ProfileInfo({
   name, 
   bio, 
   tag,
-  isCurrentUser,
-  onSave
+  isCurrentUser
 }: ProfileInfoProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editBio, setEditBio] = useState(bio);
-
-  const handleSave = () => {
-    onSave({ bio: editBio, tag });
-    setIsEditing(false);
-  };
-
   return (
     <div className="flex-1 space-y-6">
       <div className="space-y-4 w-full">
@@ -40,31 +28,6 @@ export function ProfileInfo({
               <span className="text-sm">New York, NY</span>
             </div>
           </div>
-          
-          {isCurrentUser && (
-            <div className="flex items-center gap-2 ml-auto">
-              {isEditing ? (
-                <>
-                  <Button variant="outline\" size="sm\" onClick={handleSave}>
-                    <Check className="h-4 w-4 mr-2" />
-                    Save
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => {
-                    setEditBio(bio);
-                    setIsEditing(false);
-                  }}>
-                    <X className="h-4 w-4 mr-2" />
-                    Cancel
-                  </Button>
-                </>
-              ) : (
-                <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Edit Bio
-                </Button>
-              )}
-            </div>
-          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
@@ -83,33 +46,15 @@ export function ProfileInfo({
         </div>
       </div>
 
-      {isEditing ? (
-        <div className="relative max-w-2xl">
-          <Textarea
-            value={editBio}
-            onChange={(e) => setEditBio(e.target.value)}
-            className="min-h-[80px] max-h-[120px] w-full resize-none text-sm leading-relaxed bg-background/50 backdrop-blur-sm border border-input/20 focus-visible:ring-1 focus-visible:ring-ring/30 rounded-lg p-4 transition-all duration-200 ease-in-out shadow-sm hover:border-input/30 focus-visible:border-input/40"
-            placeholder="Tell your story and showcase your work..."
-            style={{
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)'
-            }}
-          />
-          <div className="absolute bottom-2 right-2 text-xs text-muted-foreground/60">
-            {editBio.length}/500
-          </div>
-        </div>
-      ) : (
-        <p className="text-sm leading-relaxed text-muted-foreground max-w-2xl">
-          {bio || (
-            <span className="text-muted-foreground/60">
-              This user hasn't added a bio yet. 
-              <br />
-              <span className="text-xs">Tell your story and showcase your work to connect with others.</span>
-            </span>
-          )}
-        </p>
-      )}
+      <p className="text-sm leading-relaxed text-muted-foreground max-w-2xl">
+        {bio || (
+          <span className="text-muted-foreground/60">
+            This user hasn't added a bio yet. 
+            <br />
+            <span className="text-xs">Tell your story and showcase your work to connect with others.</span>
+          </span>
+        )}
+      </p>
     </div>
   );
 }
