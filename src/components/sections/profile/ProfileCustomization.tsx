@@ -7,8 +7,8 @@ import {
   DragEndEvent,
   UniqueIdentifier,
   restrictToVerticalAxis,
-  restrictToParentElement
 } from '@dnd-kit/core';
+import { restrictToParentElement } from '@dnd-kit/modifiers';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
