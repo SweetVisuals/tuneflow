@@ -1,52 +1,92 @@
-import { Music, Gem, Video } from 'lucide-react';
-import React, { ReactNode } from 'react';
-import { ProfileItem } from './types';
+import { ReactNode } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Music, Gem, Video, Upload, Plus } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ProfileContentSectionProps {
   id: string;
   name: string;
+  type: string;
   icon: ReactNode;
-  content: React.ReactNode;
-  state: 'collapsed' | 'expanded';
+  content?: ReactNode;
+  state: 'expanded' | 'collapsed';
 }
 
 export function ProfileContentSection({
   id,
   name,
+  type,
   icon,
   content,
   state
 }: ProfileContentSectionProps) {
   return (
-    <div key={id} className={`space-y-2 w-full px-6 max-w-[1800px] ml-[-25px] mx-auto ${state === 'collapsed' ? 'pr-6 min-w-[calc(100vw-8rem)]' : 'pr-6 min-w-[calc(100vw-24rem)]'}`}>
-      <div className="flex items-center gap-3">
-        {icon}
-        <h3 className="font-medium text-lg">{name}</h3>
-      </div>
-      <div className={`col-span-1 ${state === 'collapsed' ? 'mr-[-30px]' : 'mr-[-43px]'}`}>
-        {content}
-      </div>
-    </div>
+    <Card className={cn(
+      "overflow-hidden transition-all duration-300",
+      state === 'collapsed' ? 'mr-[-30px]' : 'mr-[-43px]'
+    )}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-lg font-medium">
+          <div className="flex items-center gap-2">
+            {icon}
+            {name}
+          </div>
+        </CardTitle>
+        <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Plus className="h-4 w-4" />
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {content ? (
+          content
+        ) : (
+          <div className="flex flex-col items-center justify-center h-40 rounded-lg border border-dashed border-muted pt-6 pb-6 pl-6">
+            {type === 'music' && <Music className="h-8 w-8 text-muted-foreground mb-2" />}
+            {type === 'services' && <Gem className="h-8 w-8 text-muted-foreground mb-2" />}
+            {type === 'videos' && <Video className="h-8 w-8 text-muted-foreground mb-2" />}
+            <p className="text-muted-foreground text-center">
+              {`No ${name.toLowerCase()} added yet`}
+            </p>
+            <p className="text-sm text-muted-foreground/60 mt-1 text-center">
+              {type === 'music' && 'Upload your first beat tape to get started'}
+              {type === 'services' && 'Add services to showcase your offerings'}
+              {type === 'videos' && 'Create your first tutorial to share your knowledge'}
+            </p>
+            <Button variant="outline" className="mt-4 gap-2">
+              <Upload className="h-4 w-4" />
+              Upload {type === 'services' ? 'Service' : type}
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
-export const defaultContentSections: Omit<ProfileItem, 'content'>[] = [
+export const defaultContentSections = [
   {
     id: 'beat-tapes',
     name: 'Beat Tapes',
     type: 'music',
     icon: <Music className="h-4 w-4" />,
+    order: 0,
+    visible: true
   },
   {
     id: 'services',
     name: 'Services',
     type: 'services',
     icon: <Gem className="h-4 w-4" />,
+    order: 1,
+    visible: true
   },
   {
     id: 'tutorials',
     name: 'Tutorials',
     type: 'videos',
     icon: <Video className="h-4 w-4" />,
+    order: 2,
+    visible: true
   }
 ];

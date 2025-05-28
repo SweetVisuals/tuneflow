@@ -30,3 +30,8 @@ export interface ProfilePreferences {
   theme: 'modern' | 'minimal' | 'classic';
   showStats: boolean;
 }
+
+export interface ContentUploadProps {
+  type: 'music' | 'video' | 'service';
+  onUpload: (files: File[]) => Promise<void>;
+}
