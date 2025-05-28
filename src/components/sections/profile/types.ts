@@ -4,8 +4,10 @@ export interface ProfileItem {
   id: string;
   name: string;
   type: string;
-  content: ReactNode; // Allow React elements as content
+  content: ReactNode;
   icon: ReactNode;
+  visible?: boolean;
+  order?: number;
 }
 
 export interface ProfileProps {
@@ -21,4 +23,10 @@ export interface ProfileProps {
   showBanner?: boolean;
   isSidebarCollapsed: boolean;
   showEditButton?: boolean;
+}
+
+export interface ProfilePreferences {
+  layout: 'grid' | 'list' | 'masonry';
+  theme: 'modern' | 'minimal' | 'classic';
+  showStats: boolean;
 }

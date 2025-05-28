@@ -3,7 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Gem, Headphones, MapPin, MessageCircle, UsersRound, Pencil, Check, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ProfileInfoProps {
   name: string;
@@ -32,6 +34,7 @@ export function ProfileInfo({
   const [isEditing, setIsEditing] = useState(false);
   const [editBio, setEditBio] = useState(bio);
   const [editTag, setEditTag] = useState(tag);
+  const [editName, setEditName] = useState(name);
 
   const handleSave = () => {
     onSave({ bio: editBio, tag: editTag });
@@ -39,11 +42,19 @@ export function ProfileInfo({
   };
 
   return (
-    <div className="flex-1 space-y-3">
-      <div className="space-y-2 w-full">
+    <div className="flex-1 space-y-6">
+      <div className="space-y-4 w-full">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold">{name}</h1>
+          <div className="flex items-center gap-4 flex-1">
+            {isEditing ? (
+              <Input
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                className="text-3xl font-bold bg-transparent border-none focus-visible:ring-0 px-0"
+              />
+            ) : (
+              <h1 className="text-3xl font-bold">{name}</h1>
+            )}
             <div className="flex items-center gap-4">
               {isEditing ? (
                 <Select 
@@ -65,7 +76,7 @@ export function ProfileInfo({
                   </SelectContent>
                 </Select>
               ) : (
-                tag && <Badge variant="outline">{tag}</Badge>
+                tag && <Badge variant="outline" className="animate-in fade-in-50">{tag}</Badge>
               )}
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
@@ -95,7 +106,7 @@ export function ProfileInfo({
             </div>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-3 text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <UsersRound className="h-4 w-4" />
             <span className="text-sm">0 followers</span>
@@ -115,7 +126,7 @@ export function ProfileInfo({
         <Textarea
           value={editBio}
           onChange={(e) => setEditBio(e.target.value)}
-          className="text-sm max-w-2xl pr-20 ml-0.5"
+          className="min-h-[100px] resize-none text-sm bg-transparent focus-visible:ring-1"
           placeholder="Tell your story and showcase your work..."
         />
       ) : (
