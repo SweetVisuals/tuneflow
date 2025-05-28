@@ -1,13 +1,7 @@
 import * as React from "react"
-import { createClient } from "@supabase/supabase-js"
 import { supabase } from "@/lib/supabase"
 import { useNavigate } from "react-router-dom"
 
-const serviceRoleKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZiZ25jaWpodGJwbG5lcHlzYmxkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NzM3NTQ5MCwiZXhwIjoyMDYyOTUxNDkwfQ.o46erUPw6uWTdU5XjHQXmp0HHLyubqWBbUzB-cFVyWE"
-const supabaseAdmin = createClient(
-  "https://fbgncijhtbplnepysbld.supabase.co",
-  serviceRoleKey
-)
 import {
   BadgeCheck,
   Bell,
