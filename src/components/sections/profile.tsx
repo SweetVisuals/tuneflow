@@ -123,9 +123,9 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
           onSave={async ({ bio, tag }) => {
             try {
               const { error } = await supabase
-                .from('user_profiles')
+                .from('profiles')  // Changed from 'user_profiles' to 'profiles'
                 .update({ bio, tag: tag || null })
-                .eq('user_id', currentUserId);
+                .eq('id', currentUserId);
               
               if (error) throw error;
               
