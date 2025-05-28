@@ -34,7 +34,7 @@ export function ProfileInfo({
         <div className="flex items-center gap-4">
           <h1 className="text-3xl font-bold">{name}</h1>
           <div className="flex items-center gap-4">
-            {tag && <Badge variant="outline" className="animate-in fade-in-50">{tag}</Badge>}
+            {tag && <Badge variant="outline\" className="animate-in fade-in-50">{tag}</Badge>}
             <div className="flex items-center gap-1.5 text-muted-foreground">
               <MapPin className="h-4 w-4" />
               <span className="text-sm">New York, NY</span>
@@ -45,7 +45,7 @@ export function ProfileInfo({
             <div className="flex items-center gap-2 ml-auto">
               {isEditing ? (
                 <>
-                  <Button variant="outline" size="sm" onClick={handleSave}>
+                  <Button variant="outline\" size="sm\" onClick={handleSave}>
                     <Check className="h-4 w-4 mr-2" />
                     Save
                   </Button>
