@@ -194,7 +194,7 @@ export default function ProfilePage() {
                 <div className="flex gap-2">
                   {!isCurrentUser && (
                     <>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline\" size="sm">
                         <MessageCircle className="h-4 w-4 mr-2" />
                         Message
                       </Button>
