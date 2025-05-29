@@ -26,12 +26,17 @@ export interface ProfileProps {
 }
 
 export interface ProfilePreferences {
-  layout: 'grid' | 'list' | 'masonry';
-  theme: 'modern' | 'minimal' | 'classic';
-  showStats: boolean;
-}
-
-export interface ContentUploadProps {
-  type: 'music' | 'video' | 'service';
-  onUpload: (files: File[]) => Promise<void>;
+  layout: 'grid' | 'list' | 'masonry' | 'carousel';
+  theme: 'modern' | 'minimal' | 'classic' | 'artistic';
+  accentColor?: string;
+  background?: 'solid' | 'gradient' | 'pattern' | 'image';
+  font?: string;
+  customIcons?: boolean;
+  animations?: boolean;
+  previews?: boolean;
+  visibility?: 'public' | 'followers' | 'private';
+  activityStatus?: boolean;
+  contentPrivacy?: 'public' | 'followers' | 'private';
+  emailNotifications?: boolean;
+  pushNotifications?: boolean;
 }

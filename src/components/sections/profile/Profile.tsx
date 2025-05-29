@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Music, Gem, Video } from 'lucide-react';
+import { Music, Gem, Video, LayoutGrid, LayoutList } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
@@ -11,6 +11,7 @@ import { ProfileUploadDialog } from '@/components/sections/profile/ProfileUpload
 import { ProfileCustomization } from '@/components/sections/profile/ProfileCustomization';
 import { ProfileProps, ProfileItem, ProfilePreferences } from '@/components/sections/profile/types';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 export function Profile({ user, currentUserId, showBanner = true, showEditButton = false }: ProfileProps) {
   const [showBannerUpload, setShowBannerUpload] = useState(false);
@@ -23,6 +24,7 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
     theme: 'modern',
     showStats: true
   });
+  const [layoutView, setLayoutView] = useState<'grid' | 'list'>('grid');
   const { toast } = useToast();
   const { state } = useSidebar();
 
@@ -57,6 +59,7 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
             theme: 'modern',
             showStats: true
           });
+          setLayoutView(savedLayout.preferences?.layout || 'grid');
         } else {
           setProfileSections(defaultContentSections.map((section, index) => ({
             ...section,
@@ -134,7 +137,10 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
               visible: section.visible,
               order: section.order
             })),
-            preferences
+            preferences: {
+              ...preferences,
+              layout: layoutView
+            }
           }
         })
         .eq('id', currentUserId);
@@ -184,6 +190,29 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
         description: error instanceof Error ? error.message : 'Failed to update profile',
         variant: 'destructive',
       });
+    }
+  };
+
+  const toggleLayout = async () => {
+    const newLayout = layoutView === 'grid' ? 'list' : 'grid';
+    setLayoutView(newLayout);
+    
+    if (currentUserId) {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            layout: {
+              ...preferences,
+              layout: newLayout
+            }
+          })
+          .eq('id', currentUserId);
+
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error saving layout preference:', error);
+      }
     }
   };
 
@@ -239,19 +268,48 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
             onSave={handleSaveLayout}
           />
         ) : (
-          <div className="space-y-6">
-            {profileSections
-              .filter(section => section.visible)
-              .sort((a, b) => (a.order || 0) - (b.order || 0))
-              .map((section) => (
-                <div key={section.id} className="w-full">
-                  <ProfileContentSection
-                    {...section}
-                    state={state}
-                  />
-                </div>
-              ))}
-          </div>
+          <>
+            <div className="flex justify-end mb-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleLayout}
+                className="gap-2"
+              >
+                {layoutView === 'grid' ? (
+                  <>
+                    <LayoutList className="h-4 w-4" />
+                    List View
+                  </>
+                ) : (
+                  <>
+                    <LayoutGrid className="h-4 w-4" />
+                    Grid View
+                  </>
+                )}
+              </Button>
+            </div>
+
+            <div className={cn(
+              "space-y-6",
+              layoutView === 'list' ? 'max-w-3xl mx-auto' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+            )}>
+              {profileSections
+                .filter(section => section.visible)
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .map((section) => (
+                  <div key={section.id} className={cn(
+                    "w-full",
+                    layoutView === 'list' && "mb-6"
+                  )}>
+                    <ProfileContentSection
+                      {...section}
+                      state={state}
+                    />
+                  </div>
+                ))}
+            </div>
+          </>
         )}
       </div>
     </div>

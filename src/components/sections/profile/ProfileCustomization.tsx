@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ProfileItem } from './types';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { GripVertical, Layout as LayoutIcon, Palette, Settings2, Bell, Globe2, Shield, Eye, Brush, Layers, Monitor } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProfileCustomizationProps {
   sections: ProfileItem[];
@@ -17,9 +19,39 @@ interface ProfileCustomizationProps {
 
 export function ProfileCustomization({ sections, userId, onSave }: ProfileCustomizationProps) {
   const [items, setItems] = useState<ProfileItem[]>(sections);
-  const [layout, setLayout] = useState('grid');
-  const [theme, setTheme] = useState('modern');
+  const [preferences, setPreferences] = useState({
+    layout: 'grid',
+    theme: 'modern',
+    accentColor: '#9D4EDD',
+    background: 'solid',
+    font: 'inter',
+    customIcons: true,
+    animations: true,
+    previews: true,
+    visibility: 'public',
+    activityStatus: true,
+    contentPrivacy: 'public',
+    emailNotifications: true,
+    pushNotifications: true
+  });
   const [activeTab, setActiveTab] = useState('layout');
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('preferences')
+        .eq('id', userId)
+        .single();
+
+      if (!error && data?.preferences) {
+        setPreferences({ ...preferences, ...data.preferences });
+      }
+    };
+
+    fetchPreferences();
+  }, [userId]);
 
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -29,6 +61,39 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
     newItems.splice(result.destination.index, 0, reorderedItem);
 
     setItems(newItems.map((item, index) => ({ ...item, order: index })));
+  };
+
+  const handleSave = async () => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          preferences,
+          layout: {
+            sections: items,
+            preferences
+          }
+        })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      onSave(items);
+      toast({
+        title: "Settings saved",
+        description: "Your profile customization has been updated"
+      });
+    } catch (error) {
+      toast({
+        title: "Error saving settings",
+        description: error instanceof Error ? error.message : "Failed to save changes",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const updatePreference = (key: keyof typeof preferences, value: any) => {
+    setPreferences(prev => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -72,7 +137,10 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
                   <Label>Display Mode</Label>
                   <p className="text-sm text-muted-foreground">Choose how your content is displayed</p>
                 </div>
-                <Select value={layout} onValueChange={setLayout}>
+                <Select 
+                  value={preferences.layout} 
+                  onValueChange={(value) => updatePreference('layout', value)}
+                >
                   <SelectTrigger className="w-40">
                     <SelectValue />
                   </SelectTrigger>
@@ -148,7 +216,10 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
                     <Label>Theme Style</Label>
                     <p className="text-sm text-muted-foreground">Choose your profile's visual style</p>
                   </div>
-                  <Select value={theme} onValueChange={setTheme}>
+                  <Select 
+                    value={preferences.theme} 
+                    onValueChange={(value) => updatePreference('theme', value)}
+                  >
                     <SelectTrigger className="w-40">
                       <SelectValue />
                     </SelectTrigger>
@@ -161,50 +232,59 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
                   </Select>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label>Custom Accent Color</Label>
-                      <p className="text-sm text-muted-foreground">Set your profile's accent color</p>
-                    </div>
-                    <Input type="color" className="w-20 h-8" />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Custom Accent Color</Label>
+                    <p className="text-sm text-muted-foreground">Set your profile's accent color</p>
                   </div>
+                  <Input 
+                    type="color" 
+                    className="w-20 h-8"
+                    value={preferences.accentColor}
+                    onChange={(e) => updatePreference('accentColor', e.target.value)}
+                  />
+                </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label>Background Style</Label>
-                      <p className="text-sm text-muted-foreground">Choose your profile's background</p>
-                    </div>
-                    <Select defaultValue="solid">
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="solid">Solid Color</SelectItem>
-                        <SelectItem value="gradient">Gradient</SelectItem>
-                        <SelectItem value="pattern">Pattern</SelectItem>
-                        <SelectItem value="image">Custom Image</SelectItem>
-                      </SelectContent>
-                    </Select>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Background Style</Label>
+                    <p className="text-sm text-muted-foreground">Choose your profile's background</p>
                   </div>
+                  <Select 
+                    value={preferences.background}
+                    onValueChange={(value) => updatePreference('background', value)}
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="solid">Solid Color</SelectItem>
+                      <SelectItem value="gradient">Gradient</SelectItem>
+                      <SelectItem value="pattern">Pattern</SelectItem>
+                      <SelectItem value="image">Custom Image</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label>Font Style</Label>
-                      <p className="text-sm text-muted-foreground">Select your preferred font</p>
-                    </div>
-                    <Select defaultValue="inter">
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="inter">Inter</SelectItem>
-                        <SelectItem value="poppins">Poppins</SelectItem>
-                        <SelectItem value="roboto">Roboto</SelectItem>
-                        <SelectItem value="montserrat">Montserrat</SelectItem>
-                      </SelectContent>
-                    </Select>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Font Style</Label>
+                    <p className="text-sm text-muted-foreground">Select your preferred font</p>
                   </div>
+                  <Select 
+                    value={preferences.font}
+                    onValueChange={(value) => updatePreference('font', value)}
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="inter">Inter</SelectItem>
+                      <SelectItem value="poppins">Poppins</SelectItem>
+                      <SelectItem value="roboto">Roboto</SelectItem>
+                      <SelectItem value="montserrat">Montserrat</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </CardContent>
@@ -223,7 +303,10 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
                     <p className="text-sm text-muted-foreground">Use custom icons for sections</p>
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={preferences.customIcons}
+                  onCheckedChange={(checked) => updatePreference('customIcons', checked)}
+                />
               </div>
 
               <div className="flex items-center justify-between">
@@ -234,7 +317,10 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
                     <p className="text-sm text-muted-foreground">Enable smooth transitions</p>
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={preferences.animations}
+                  onCheckedChange={(checked) => updatePreference('animations', checked)}
+                />
               </div>
 
               <div className="flex items-center justify-between">
@@ -245,7 +331,10 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
                     <p className="text-sm text-muted-foreground">Show preview thumbnails</p>
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={preferences.previews}
+                  onCheckedChange={(checked) => updatePreference('previews', checked)}
+                />
               </div>
             </CardContent>
           </Card>
@@ -267,7 +356,10 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
                     <p className="text-sm text-muted-foreground">Control who can see your profile</p>
                   </div>
                 </div>
-                <Select defaultValue="public">
+                <Select 
+                  value={preferences.visibility}
+                  onValueChange={(value) => updatePreference('visibility', value)}
+                >
                   <SelectTrigger className="w-40">
                     <SelectValue />
                   </SelectTrigger>
@@ -287,7 +379,10 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
                     <p className="text-sm text-muted-foreground">Show when you're online</p>
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={preferences.activityStatus}
+                  onCheckedChange={(checked) => updatePreference('activityStatus', checked)}
+                />
               </div>
 
               <div className="flex items-center justify-between">
@@ -298,7 +393,10 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
                     <p className="text-sm text-muted-foreground">Protect your uploads</p>
                   </div>
                 </div>
-                <Select defaultValue="public">
+                <Select 
+                  value={preferences.contentPrivacy}
+                  onValueChange={(value) => updatePreference('contentPrivacy', value)}
+                >
                   <SelectTrigger className="w-40">
                     <SelectValue />
                   </SelectTrigger>
@@ -325,7 +423,10 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
                     <p className="text-sm text-muted-foreground">Get updates via email</p>
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={preferences.emailNotifications}
+                  onCheckedChange={(checked) => updatePreference('emailNotifications', checked)}
+                />
               </div>
 
               <div className="flex items-center justify-between">
@@ -336,7 +437,10 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
                     <p className="text-sm text-muted-foreground">Get browser notifications</p>
                   </div>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={preferences.pushNotifications}
+                  onCheckedChange={(checked) => updatePreference('pushNotifications', checked)}
+                />
               </div>
             </CardContent>
           </Card>
@@ -347,7 +451,7 @@ export function ProfileCustomization({ sections, userId, onSave }: ProfileCustom
         <Button variant="outline" onClick={() => onSave(sections)}>
           Cancel
         </Button>
-        <Button onClick={() => onSave(items)}>Save Changes</Button>
+        <Button onClick={handleSave}>Save Changes</Button>
       </div>
     </div>
   );
