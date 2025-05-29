@@ -18,6 +18,34 @@ export interface ProfileProps {
     bio: string;
     tag?: string;
     isNew?: boolean;
+    stats?: {
+      followers: number;
+      following: number;
+      likes: number;
+      views: number;
+    };
+    achievements?: {
+      id: string;
+      name: string;
+      icon: string;
+      description: string;
+      unlockedAt: string;
+    }[];
+    skills?: {
+      name: string;
+      level: number;
+      endorsements: number;
+    }[];
+    socialLinks?: {
+      platform: string;
+      url: string;
+      username: string;
+    }[];
+    location?: {
+      city: string;
+      country: string;
+      timezone: string;
+    };
   };
   currentUserId: string;
   showBanner?: boolean;
@@ -39,4 +67,9 @@ export interface ProfilePreferences {
   contentPrivacy?: 'public' | 'followers' | 'private';
   emailNotifications?: boolean;
   pushNotifications?: boolean;
+}
+
+export interface ContentUploadProps {
+  type: 'music' | 'video' | 'service';
+  onUpload: (files: File[]) => Promise<void>;
 }
