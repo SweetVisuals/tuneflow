@@ -8,13 +8,15 @@ interface ProfileBannerProps {
   onEditClick: () => void;
   onSettingsClick: () => void;
   onUploadClick: () => void;
+  isEditing?: boolean;
 }
 
 export function ProfileBanner({ 
   isCurrentUser,
   onEditClick,
   onSettingsClick,
-  onUploadClick
+  onUploadClick,
+  isEditing = false
 }: ProfileBannerProps) {
   const bannerRef = useRef<HTMLDivElement>(null);
 
@@ -35,14 +37,17 @@ export function ProfileBanner({
               <Button 
                 variant="secondary" 
                 size="sm" 
-                className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20"
+                className={cn(
+                  "bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20",
+                  isEditing && "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
                 onClick={(e) => {
                   e.stopPropagation();
                   onEditClick();
                 }}
               >
                 <Pencil className="h-4 w-4 mr-2" />
-                Edit Profile
+                {isEditing ? 'Save Changes' : 'Edit Profile'}
               </Button>
               <Button
                 variant="secondary"

@@ -1,8 +1,9 @@
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Gem, Headphones, MapPin, UsersRound } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 interface ProfileInfoProps {
@@ -11,6 +12,7 @@ interface ProfileInfoProps {
   tag: string;
   isCurrentUser: boolean;
   onSave: (data: { bio: string; tag: string }) => void;
+  isEditing?: boolean;
 }
 
 export function ProfileInfo({ 
@@ -18,19 +20,27 @@ export function ProfileInfo({
   bio, 
   tag,
   isCurrentUser,
-  onSave
+  onSave,
+  isEditing = false
 }: ProfileInfoProps) {
-  const [isEditing, setIsEditing] = useState(false);
   const [editedBio, setEditedBio] = useState(bio);
   const [editedTag, setEditedTag] = useState(tag);
 
-  const handleSave = () => {
-    onSave({
-      bio: editedBio,
-      tag: editedTag
-    });
-    setIsEditing(false);
-  };
+  // Update local state when props change
+  useEffect(() => {
+    setEditedBio(bio);
+    setEditedTag(tag);
+  }, [bio, tag]);
+
+  // Save changes when isEditing changes from true to false
+  useEffect(() => {
+    if (!isEditing && (editedBio !== bio || editedTag !== tag)) {
+      onSave({
+        bio: editedBio,
+        tag: editedTag
+      });
+    }
+  }, [isEditing]);
 
   return (
     <div className="flex-1 space-y-6">

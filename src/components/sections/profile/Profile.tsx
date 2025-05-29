@@ -198,6 +198,7 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
           onEditClick={() => setIsEditing(!isEditing)}
           onSettingsClick={() => console.log('Settings clicked')}
           onUploadClick={() => setShowBannerUpload(true)}
+          isEditing={isEditing}
         />
 
         <div className="flex flex-col md:flex-row gap-6 items-start">
@@ -213,6 +214,7 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
             tag={user.tag || ''}
             isCurrentUser={user.id === currentUserId}
             onSave={handleProfileUpdate}
+            isEditing={isEditing}
           />
         </div>
 
