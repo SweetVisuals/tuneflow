@@ -60,7 +60,7 @@ export function ProfileInfo({
             <div>
               {isEditing ? (
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+                  <Button variant="outline\" onClick={() => setIsEditing(false)}>Cancel</Button>
                   <Button onClick={handleSave}>Save</Button>
                 </div>
               ) : (
