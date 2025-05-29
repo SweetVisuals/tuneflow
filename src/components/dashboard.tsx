@@ -9,6 +9,7 @@ import { Recent } from './sections/recent';
 import { Liked } from './sections/liked';
 import { Analytics } from './sections/analytics';
 import JobsPage from '../pages/jobs';
+import TutorialsPage from '../pages/tutorials';
 
 interface DashboardProps {
   activeTab: string;
@@ -28,6 +29,7 @@ export function Dashboard({ activeTab }: DashboardProps) {
       {activeTab === 'liked' && <Liked />}
       {activeTab === 'analytics' && <Analytics />}
       {activeTab === 'jobs' && <JobsPage />}
+      {activeTab === 'tutorials' && <TutorialsPage />}
     </div>
   );
 }

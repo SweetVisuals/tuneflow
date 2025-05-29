@@ -22,7 +22,8 @@ import {
   GraduationCap,
   FileText,
   Video,
-  Gem
+  Gem,
+  BookOpen
 } from "lucide-react"
 import { 
   Sidebar,
@@ -109,6 +110,13 @@ export function AppSidebar({ authenticated, activeTab, setActiveTab, navigate }:
       icon: Briefcase,
       isActive: activeTab === "jobs",
       onClick: () => setActiveTab("jobs"),
+    },
+    {
+      title: "Tutorials",
+      url: "#",
+      icon: BookOpen,
+      isActive: activeTab === "tutorials",
+      onClick: () => setActiveTab("tutorials"),
     },
     {
       title: "Analytics",
