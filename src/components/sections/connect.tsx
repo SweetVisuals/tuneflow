@@ -8,6 +8,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowRight, MessageSquare, Search, Star, UserPlus } from 'lucide-react';
 import { MessageCard } from '../ui/message-card';
 
+interface ProfileCardProps {
+  name: string;
+  role: string;
+  location: string;
+  imgUrl: string;
+  skills: string[];
+  bio: string;
+}
+
 export function Connect() {
   const [connectTab, setConnectTab] = useState('discover');
 
@@ -305,15 +314,6 @@ export function Connect() {
       </Tabs>
     </div>
   );
-}
-
-interface ProfileCardProps {
-  name: string;
-  role: string;
-  location: string;
-  imgUrl: string;
-  skills: string[];
-  bio: string;
 }
 
 function ProfileCard({ name, role, location, imgUrl, skills, bio }: ProfileCardProps) {

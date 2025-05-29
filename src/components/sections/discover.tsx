@@ -31,19 +31,19 @@ export function Discover() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-<Card className="overflow-hidden border bg-gradient-to-br from-violet-500/20 to-purple-600/30 hover:shadow-md transition-all">
-  <CardContent className="p-6 flex flex-col h-full justify-between pb-2.5">
-    <div>
-      <Flame className="h-10 w-10 text-orange-500 mb-4" />
-      <h3 className="text-xl font-semibold mb-2">Trending Artists</h3>
-      <p className="text-muted-foreground">Discover the most popular artists and producers making waves this week.</p>
-    </div>
-    <Button variant="secondary" className="w-full mt-4">
-      <span>Explore</span>
-      <ArrowRight className="w-4 h-4 ml-2" />
-    </Button>
-  </CardContent>
-</Card>
+          <Card className="overflow-hidden border bg-gradient-to-br from-violet-500/20 to-purple-600/30 hover:shadow-md transition-all">
+            <CardContent className="p-6 flex flex-col h-full justify-between pb-2.5">
+              <div>
+                <Flame className="h-10 w-10 text-orange-500 mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Trending Artists</h3>
+                <p className="text-muted-foreground">Discover the most popular artists and producers making waves this week.</p>
+              </div>
+              <Button variant="secondary" className="w-full mt-4">
+                <span>Explore</span>
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </CardContent>
+          </Card>
 
           <Card className="overflow-hidden border bg-gradient-to-br from-blue-500/20 to-cyan-600/30 hover:shadow-md transition-all">
             <CardContent className="p-6 flex flex-col h-full justify-between pb-2.5">
