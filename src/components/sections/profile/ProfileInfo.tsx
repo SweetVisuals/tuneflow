@@ -1,5 +1,4 @@
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Gem, Headphones, MapPin, UsersRound } from 'lucide-react';
@@ -36,38 +35,24 @@ export function ProfileInfo({
   return (
     <div className="flex-1 space-y-6">
       <div className="space-y-4 w-full">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold">{name}</h1>
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold">{name}</h1>
-            <div className="flex items-center gap-4">
-              {isEditing ? (
-                <Input
-                  value={editedTag}
-                  onChange={(e) => setEditedTag(e.target.value)}
-                  placeholder="Add a tag"
-                  className="w-32"
-                />
-              ) : (
-                tag && <Badge variant="outline">{tag}</Badge>
-              )}
-              <div className="flex items-center gap-1.5 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span className="text-sm">New York, NY</span>
-              </div>
+            {isEditing ? (
+              <Input
+                value={editedTag}
+                onChange={(e) => setEditedTag(e.target.value)}
+                placeholder="Add a tag"
+                className="w-32"
+              />
+            ) : (
+              tag && <Badge variant="outline">{tag}</Badge>
+            )}
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <MapPin className="h-4 w-4" />
+              <span className="text-sm">New York, NY</span>
             </div>
           </div>
-          {isCurrentUser && (
-            <div>
-              {isEditing ? (
-                <div className="flex gap-2">
-                  <Button variant="outline\" onClick={() => setIsEditing(false)}>Cancel</Button>
-                  <Button onClick={handleSave}>Save</Button>
-                </div>
-              ) : (
-                <Button variant="outline" onClick={() => setIsEditing(true)}>Edit Profile</Button>
-              )}
-            </div>
-          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-6 text-muted-foreground">
