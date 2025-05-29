@@ -4,8 +4,9 @@ import { supabase } from '../lib/supabase';
 import { Layout } from '../components/layout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { 
   Users, 
   Music, 
@@ -15,7 +16,14 @@ import {
   MessageCircle,
   Edit,
   Bell,
-  BellOff
+  BellOff,
+  Calendar,
+  Clock,
+  Star,
+  Briefcase,
+  Mic2,
+  Settings,
+  Headphones
 } from 'lucide-react';
 
 interface UserProfile {
@@ -30,12 +38,75 @@ interface UserProfile {
   likes_count: number;
 }
 
+interface Service {
+  id: string;
+  title: string;
+  description: string;
+  price_per_hour: number;
+  icon: keyof typeof serviceIcons;
+  rating: number;
+  reviews_count: number;
+  availability: string;
+}
+
+const serviceIcons = {
+  production: Music,
+  mixing: Settings,
+  mastering: Headphones,
+  recording: Mic2,
+  technician: Briefcase
+};
+
 export default function ProfilePage() {
   const { username } = useParams();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
+
+  // Example services data - in production this would come from the database
+  const [services] = useState<Service[]>([
+    {
+      id: '1',
+      title: 'Music Production',
+      description: 'Full production service including arrangement, recording, and initial mixing. Specializing in hip-hop and electronic music.',
+      price_per_hour: 75,
+      icon: 'production',
+      rating: 4.8,
+      reviews_count: 124,
+      availability: 'Available next week'
+    },
+    {
+      id: '2',
+      title: 'Mixing & Mastering',
+      description: 'Professional mixing and mastering services. State-of-the-art equipment and years of experience.',
+      price_per_hour: 60,
+      icon: 'mixing',
+      rating: 4.9,
+      reviews_count: 89,
+      availability: 'Available now'
+    },
+    {
+      id: '3',
+      title: 'Vocal Recording',
+      description: 'High-quality vocal recording sessions with professional microphones and acoustic treatment.',
+      price_per_hour: 45,
+      icon: 'recording',
+      rating: 4.7,
+      reviews_count: 56,
+      availability: 'Available next week'
+    },
+    {
+      id: '4',
+      title: 'Sound Engineering',
+      description: 'Live sound engineering for events and concerts. Complete PA system available.',
+      price_per_hour: 85,
+      icon: 'technician',
+      rating: 4.9,
+      reviews_count: 73,
+      availability: 'Available weekends'
+    }
+  ]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -123,7 +194,7 @@ export default function ProfilePage() {
                 <div className="flex gap-2">
                   {!isCurrentUser && (
                     <>
-                      <Button variant="outline\" size="sm">
+                      <Button variant="outline" size="sm">
                         <MessageCircle className="h-4 w-4 mr-2" />
                         Message
                       </Button>
@@ -176,14 +247,71 @@ export default function ProfilePage() {
           </div>
 
           {/* Content Tabs */}
-          <Tabs defaultValue="tracks" className="space-y-6">
+          <Tabs defaultValue="services" className="space-y-6">
             <TabsList>
+              <TabsTrigger value="services">Services</TabsTrigger>
               <TabsTrigger value="tracks">Tracks</TabsTrigger>
               <TabsTrigger value="playlists">Playlists</TabsTrigger>
               <TabsTrigger value="reposts">Reposts</TabsTrigger>
               <TabsTrigger value="liked">Liked</TabsTrigger>
               <TabsTrigger value="about">About</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="services" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {services.map((service) => {
+                  const IconComponent = serviceIcons[service.icon];
+                  return (
+                    <Card key={service.id} className="overflow-hidden">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <IconComponent className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <h3 className="font-semibold text-lg">{service.title}</h3>
+                                <div className="flex items-center gap-1 mt-1">
+                                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                                  <span className="text-sm font-medium">{service.rating}</span>
+                                  <span className="text-sm text-muted-foreground">
+                                    ({service.reviews_count} reviews)
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-xl font-bold">${service.price_per_hour}</p>
+                                <p className="text-sm text-muted-foreground">per hour</p>
+                              </div>
+                            </div>
+                            <p className="mt-2 text-sm text-muted-foreground">
+                              {service.description}
+                            </p>
+                            <div className="flex items-center gap-2 mt-3">
+                              <Badge variant="secondary">
+                                <Clock className="h-3 w-3 mr-1" />
+                                {service.availability}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                      <CardFooter className="bg-muted/50 p-4 flex gap-2">
+                        <Button className="flex-1">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Book Now
+                        </Button>
+                        <Button variant="outline" className="flex-1">
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          Message
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  );
+                })}
+              </div>
+            </TabsContent>
 
             <TabsContent value="tracks" className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
