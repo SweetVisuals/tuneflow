@@ -168,15 +168,29 @@ export function Profile({ user, currentUserId, showBanner = true, showEditButton
           />
 
           <ProfileInfo
-            name={user.name}
-            bio={user.bio}
-            tag={user.tag || ''}
+            profile={{
+              username: user.name,
+              full_name: user.name,
+              bio: user.bio,
+              location: user.location,
+              email: user.email,
+              phone_number: user.phoneNumber,
+              profile_url: user.profileUrl
+            }}
             isCurrentUser={user.id === currentUserId}
-            onSave={async ({ bio, tag }) => {
+            onSave={async (updatedProfile) => {
               try {
                 const { error } = await supabase
                   .from('profiles')
-                  .update({ bio, tag: tag || null })
+                  .update({
+                    username: updatedProfile.username,
+                    full_name: updatedProfile.full_name,
+                    bio: updatedProfile.bio,
+                    location: updatedProfile.location,
+                    email: updatedProfile.email,
+                    phone_number: updatedProfile.phone_number,
+                    profile_url: updatedProfile.profile_url
+                  })
                   .eq('id', currentUserId);
                 
                 if (error) throw error;
